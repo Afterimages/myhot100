@@ -1,17 +1,91 @@
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+class ListNode {
+    int val;
+    ListNode next;
+    ListNode() {}
+    ListNode(int val) { this.val = val; }
+    ListNode(int val, ListNode next) { this.val = val; this.next = next; }
+}
 
 public class LCDay18 {
     public static void main(String[] args) {
         // int n = 7;
         // boolean ans = isHappy(n);
-        int[] nums= {0,1,2,4,5,7};
-        // int k = 3;
-        List<String> ans = summaryRanges(nums);
+        // int[] nums= {0,1,2,4,5,7};
+        ListNode head = new ListNode(0)
+        boolean ans = mergeTwoLists(list1, list2);
         System.err.println(ans);
     }
+
+    public ListNode mergeTwoLists(ListNode list1, ListNode list2) {
+        ListNode head = new ListNode(-1);
+        ListNode tail = head;
+        while(list1!=null&&list2!=null){
+            if(list1.val<list2.val){
+                tail.next = list1;
+                list1 = list1.next;
+            }
+            else{
+                tail.next = list2;
+                list2 = list2.next;
+            }
+            tail = tail.next;
+        }
+        tail.next = list1!=null?list1:list2;
+        return head.next;
+    }
+
+    // 环形链表:快慢指针，快慢指针相遇，说明有环，否则没有环。快指针速度是慢指针的两倍
+    public boolean hasCycle(ListNode head) {
+        if(head==null||head.next==null){
+            return false;
+        }
+
+        ListNode fast =head.next;
+        ListNode low = head;
+
+        while(low!=fast){
+            if(fast==null||fast.next==null){
+                return false;
+            }
+            low = low.next;
+            fast = fast.next.next;
+        }
+        return true;
+    }
+
+    public static boolean isValid(String s) {
+        int length = s.length();
+        if(length%2!=0){
+            return false;
+        }
+        Map<Character,Character> map = new HashMap<>();
+        map.put(')', '(');
+        map.put(']', '[');
+        map.put('}', '{');
+        Deque<Character> stack = new LinkedList<>(); //只用来放左括号
+        for(int i =0;i<length;i++){
+            char c = s.charAt(i);
+            if(map.containsKey(c)){
+                if(stack.isEmpty()||map.get(c)!= stack.peek()){
+                    return false;
+                }
+                stack.pop();
+            }
+            else{
+                stack.push(c);
+            }
+            
+        }
+        return stack.isEmpty();
+    }
+
+    // 汇总区间:用字符串缓冲区，注意边界条件，注意字符串缓冲区的append方法。（我自己用的方法就从左往右遍历，效果不好，总是要判断溢出，代码不够简洁，还是标准的双指针效果好）
     public static List<String> summaryRanges(int[] nums) {
         List<String> ans = new ArrayList<>();
         int length = nums.length;
